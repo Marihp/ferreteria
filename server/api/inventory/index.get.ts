@@ -4,14 +4,16 @@ import { secureHeaders } from '../../utils/security'
 
 export default defineEventHandler(async (event) => {
   secureHeaders(event)
-  await requireAuth(event)
   const { pb } = await requireAuth(event)
   const q = getQuery(event)
   const page = Number(q.page || 1)
   const perPage = Number(q.perPage || 200)
+  const filter = ''
 
-  const list = await pb.collection('categories').getList(page, perPage, {
-    sort: 'name'
+  const list = await pb.collection('inventory').getList(page, perPage, {
+    filter,
+    sort: '-created',
+    expand: 'category'
   })
   return list
 })

@@ -12,7 +12,7 @@
       {
         "autogeneratePattern": "[a-z0-9]{15}",
         "hidden": false,
-        "id": "text_id",
+        "id": "text_pk_id",
         "max": 15,
         "min": 15,
         "name": "id",
@@ -26,7 +26,7 @@
       {
         "cost": 0,
         "hidden": true,
-        "id": "password",
+        "id": "password_field",
         "max": 0,
         "min": 8,
         "name": "password",
@@ -53,7 +53,7 @@
       {
         "exceptDomains": null,
         "hidden": false,
-        "id": "email",
+        "id": "email_field",
         "name": "email",
         "onlyDomains": null,
         "presentable": false,
@@ -63,7 +63,7 @@
       },
       {
         "hidden": false,
-        "id": "emailVisibility",
+        "id": "bool_emailVisibility",
         "name": "emailVisibility",
         "presentable": false,
         "required": false,
@@ -72,7 +72,7 @@
       },
       {
         "hidden": false,
-        "id": "verified",
+        "id": "bool_verified",
         "name": "verified",
         "presentable": false,
         "required": false,
@@ -87,11 +87,31 @@
         "min": 0,
         "name": "name",
         "pattern": "",
-        "presentable": false,
+        "presentable": true,
         "primaryKey": false,
         "required": false,
         "system": false,
         "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "file_avatar",
+        "maxSelect": 1,
+        "maxSize": 0,
+        "mimeTypes": [
+          "image/jpeg",
+          "image/png",
+          "image/svg+xml",
+          "image/gif",
+          "image/webp"
+        ],
+        "name": "avatar",
+        "presentable": false,
+        "protected": false,
+        "required": false,
+        "system": false,
+        "thumbs": null,
+        "type": "file"
       },
       {
         "hidden": false,
@@ -104,22 +124,22 @@
       },
       {
         "hidden": false,
-        "id": "created",
+        "id": "autodate_created",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
         "presentable": false,
-        "system": false,
+        "system": true,
         "type": "autodate"
       },
       {
         "hidden": false,
-        "id": "updated",
+        "id": "autodate_updated",
         "name": "updated",
         "onCreate": true,
         "onUpdate": true,
         "presentable": false,
-        "system": false,
+        "system": true,
         "type": "autodate"
       }
     ],
@@ -128,14 +148,58 @@
       "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
     ],
     "system": false,
+    "authRule": "",
+    "manageRule": null,
+    "authAlert": {
+      "enabled": true,
+      "emailTemplate": {
+        "subject": "Login from a new location",
+        "body": "<p>Hello,</p>..."
+      }
+    },
+    "oauth2": {
+      "mappedFields": {
+        "id": "",
+        "name": "name",
+        "username": "",
+        "avatarURL": "avatar"
+      },
+      "enabled": false
+    },
     "passwordAuth": {
       "enabled": true,
       "identityFields": [
         "email"
       ]
     },
+    "mfa": {
+      "enabled": false,
+      "duration": 1800,
+      "rule": ""
+    },
+    "otp": {
+      "enabled": false,
+      "duration": 180,
+      "length": 8,
+      "emailTemplate": {
+        "subject": "OTP for {APP_NAME}",
+        "body": "<p>Hello,</p>..."
+      }
+    },
     "authToken": {
       "duration": 604800
+    },
+    "passwordResetToken": {
+      "duration": 1800
+    },
+    "emailChangeToken": {
+      "duration": 1800
+    },
+    "verificationToken": {
+      "duration": 259200
+    },
+    "fileToken": {
+      "duration": 180
     }
   },
   {
@@ -151,7 +215,7 @@
       {
         "autogeneratePattern": "[a-z0-9]{15}",
         "hidden": false,
-        "id": "text_id",
+        "id": "text_pk_id",
         "max": 15,
         "min": 15,
         "name": "id",
@@ -181,12 +245,12 @@
         "hidden": false,
         "id": "text_code",
         "max": 50,
-        "min": 0,
+        "min": 1,
         "name": "code",
         "pattern": "",
         "presentable": false,
         "primaryKey": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "text"
       },
@@ -220,7 +284,7 @@
       },
       {
         "hidden": false,
-        "id": "bool_is_active",
+        "id": "bool_isActive",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -229,7 +293,7 @@
       },
       {
         "hidden": false,
-        "id": "created",
+        "id": "autodate_created",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
@@ -239,7 +303,7 @@
       },
       {
         "hidden": false,
-        "id": "updated",
+        "id": "autodate_updated",
         "name": "updated",
         "onCreate": true,
         "onUpdate": true,
@@ -266,7 +330,7 @@
       {
         "autogeneratePattern": "[a-z0-9]{15}",
         "hidden": false,
-        "id": "text_id",
+        "id": "text_pk_id",
         "max": 15,
         "min": 15,
         "name": "id",
@@ -296,12 +360,12 @@
         "hidden": false,
         "id": "text_sku",
         "max": 100,
-        "min": 0,
+        "min": 1,
         "name": "sku",
         "pattern": "",
-        "presentable": false,
+        "presentable": true,
         "primaryKey": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "text"
       },
@@ -327,7 +391,7 @@
         "maxSelect": 1,
         "minSelect": 0,
         "name": "category",
-        "presentable": false,
+        "presentable": true,
         "required": false,
         "system": false,
         "type": "relation"
@@ -339,8 +403,8 @@
         "min": 0,
         "name": "stock",
         "onlyInt": true,
-        "presentable": false,
-        "required": false,
+        "presentable": true,
+        "required": true,
         "system": false,
         "type": "number"
       },
@@ -351,8 +415,8 @@
         "min": 0,
         "name": "min_stock",
         "onlyInt": true,
-        "presentable": false,
-        "required": false,
+        "presentable": true,
+        "required": true,
         "system": false,
         "type": "number"
       },
@@ -363,8 +427,8 @@
         "min": 0,
         "name": "cost",
         "onlyInt": false,
-        "presentable": false,
-        "required": false,
+        "presentable": true,
+        "required": true,
         "system": false,
         "type": "number"
       },
@@ -375,8 +439,8 @@
         "min": 0,
         "name": "price",
         "onlyInt": false,
-        "presentable": false,
-        "required": false,
+        "presentable": true,
+        "required": true,
         "system": false,
         "type": "number"
       },
@@ -388,7 +452,7 @@
         "min": 0,
         "name": "unit",
         "pattern": "",
-        "presentable": false,
+        "presentable": true,
         "primaryKey": false,
         "required": false,
         "system": false,
@@ -398,7 +462,7 @@
         "autogeneratePattern": "",
         "hidden": false,
         "id": "text_location",
-        "max": 120,
+        "max": 100,
         "min": 0,
         "name": "location",
         "pattern": "",
@@ -407,15 +471,6 @@
         "required": false,
         "system": false,
         "type": "text"
-      },
-      {
-        "hidden": false,
-        "id": "bool_active",
-        "name": "active",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "bool"
       },
       {
         "autogeneratePattern": "",
@@ -433,7 +488,16 @@
       },
       {
         "hidden": false,
-        "id": "created",
+        "id": "bool_active",
+        "name": "active",
+        "presentable": true,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "autodate_created",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
@@ -443,7 +507,7 @@
       },
       {
         "hidden": false,
-        "id": "updated",
+        "id": "autodate_updated",
         "name": "updated",
         "onCreate": true,
         "onUpdate": true,

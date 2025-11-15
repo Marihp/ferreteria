@@ -1,14 +1,19 @@
-# OpenStock Ferretería (Nuxt 3 + PocketBase)
+# OpenStock Ferretería (Refined)
 
-## Variables
-- `BASE_URL` = URL de PocketBase (por defecto `http://127.0.0.1:8090`)
-- `AUTH_COOKIE_SECURE` = `true|false` (por defecto `false` para HTTP)
+## Variables de entorno (servidor Nuxt)
+- `BASE_URL` → URL del PocketBase (ej: `http://127.0.0.1:8090`)
 
-## Comandos
-```bash
-npm install
-npm run build:node
-node .output/server/index.mjs  # o systemd + nginx
-```
+## Scripts
+- `npm run dev` → desarrollo
+- `npm run build:node && npm start` → producción (node server)
 
-Asegúrate de importar las colecciones en PocketBase (ver `pocketbase_collections_min.json`).
+## Endpoints clave
+- `POST /api/auth/login` → establece cookie `pb_auth` (SameSite=Lax, Secure sólo si viene HTTPS)
+- `GET /api/auth/me` → info de usuario autenticado
+- `GET/POST /api/categories`, `DELETE /api/categories/:id`
+- `GET/POST /api/inventory`, `DELETE /api/inventory/:id`
+- `GET /api/dashboard/stats` → métricas
+
+## Notas
+- El SKU se genera automáticamente en el servidor al crear un producto.
+- Las páginas `/dashboard`, `/inventory`, `/categories` están protegidas con middleware.
