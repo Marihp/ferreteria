@@ -1,21 +1,19 @@
-// Nuxt config for OpenStock Ferretería
 export default defineNuxtConfig({
-  devtools: { enabled: false },
-  modules: [
-    '@pinia/nuxt',
-    '@nuxtjs/tailwindcss'
-  ],
-  runtimeConfig: {
-    public: {
-      appName: process.env.NUXT_PUBLIC_APP_NAME || 'OpenStock Ferretería',
-      currency: process.env.NUXT_PUBLIC_CURRENCY || 'COP'
-    }
-  },
+  compatibilityDate: '2025-11-15',
+  modules: ['@nuxtjs/tailwindcss'],
+  css: ['@/assets/tailwind.css'],
   nitro: {
-    preset: 'node-server'
+    preset: 'node-server',
+    compatibilityDate: '2025-11-15'
   },
-  components: true,
-  typescript: {
-    strict: false
+  runtimeConfig: {
+    BASE_URL: process.env.BASE_URL || 'http://127.0.0.1:8090',
+    public: {}
+  },
+  app: {
+    head: {
+      title: 'Ferretería - Inventario',
+      meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }]
+    }
   }
 })

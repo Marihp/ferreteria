@@ -1,22 +1,46 @@
 import PocketBase from 'pocketbase'
 import type { H3Event } from 'h3'
+import { getHeader, getCookie, createError } from 'h3'
+
+function decodeJwt(token: string): any {
+  try {
+    const part = token.split('.')[1]
+    const payload = Buffer.from(part, 'base64url').toString('utf8')
+    return JSON.parse(payload)
+  } catch {
+    return null
+  }
+}
 
 export const getPB = (event?: H3Event) => {
   const base = process.env.BASE_URL || process.env.NUXT_PUBLIC_BASE_URL || 'http://127.0.0.1:8090'
   const pb = new PocketBase(base)
   if (event) {
-    const cookie = getCookie(event, 'pb_auth')
-    if (cookie) {
-      pb.authStore.loadFromCookie(`pb_auth=${cookie}`)
+    const raw = getHeader(event, 'cookie') || ''
+    pb.authStore.loadFromCookie(raw)
+    if (!pb.authStore.token) {
+      const token = getCookie(event, 'pb_auth')
+      if (token) pb.authStore.save(token, pb.authStore.model ?? undefined)
     }
   }
   return pb
 }
 
-export const requireAuth = (event: H3Event) => {
+export const requireAuth = async (event: H3Event) => {
   const pb = getPB(event)
-  if (!pb.authStore.isValid) {
-    throw createError({ statusCode: 401, statusMessage: 'No autenticado' })
+  const token = pb.authStore.token
+  if (!token) throw createError({ statusCode: 401, statusMessage: 'No autenticado' })
+  const payload = decodeJwt(token)
+  const now = Math.floor(Date.now() / 1000)
+  if (!payload || (payload.exp && payload.exp <= now)) {
+    throw createError({ statusCode: 401, statusMessage: 'Sesión expirada' })
+  }
+  try { await pb.collection('users').authRefresh() } catch {}
+  if (!pb.authStore.model && payload?.id) {
+    try {
+      const user = await pb.collection('users').getOne(payload.id, { requestKey: null })
+      pb.authStore.save(token, user)
+    } catch {}
   }
   return pb
 }

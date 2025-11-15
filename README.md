@@ -1,44 +1,66 @@
-# OpenStock Ferretería (Nuxt 3 + PocketBase)
+# Ferretería - Inventario (Nuxt 3 + PocketBase)
 
-Español, mínimo pero funcional para inventario, dashboard y reportes. Conecta a PocketBase vía `BASE_URL`.
+Inventario simple para ferretería con:
+- Autenticación contra colección `users` de PocketBase
+- Inventario en colección `inventory`
+- Categorías en colección `categories`
+- SKU automático (`CAT-0001`, `CAT-0002`, ...) asegurando unicidad
+- Filtros por categoría, búsqueda y stock
+- Dashboard básico (KPIs + gráfico)
 
 ## Requisitos
-- Node 18+
-- PocketBase v0.23+ corriendo en `http://127.0.0.1:8090`
-- Nginx proxy en :80 a Nuxt y (opcional) :8080 a PocketBase UI/API
+- Node.js >= 18.17 (recomendado 20.x)
+- PocketBase corriendo y accesible (BASE_URL)
 
-## Variables de entorno
-Crea `.env` con:
-```env
+## Variables
+Crear `.env` (opcional) o exportar en el servicio:
+```
 BASE_URL=http://127.0.0.1:8090
-NUXT_PUBLIC_APP_NAME=OpenStock Ferretería
-NUXT_PUBLIC_CURRENCY=COP
+NODE_ENV=production
+PORT=3000
 ```
 
-## Instalación y build
-```bash
-npm ci || npm install
+## Scripts
+```
+npm install
 npm run build:node
-node .output/server/index.mjs  # o systemd con tu openstock.service
+npm start
 ```
 
-## Endpoints
-- Auth: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
-- Productos: `GET/POST /api/products`, `PATCH/DELETE /api/products/:id`
-- Categorías: `GET/POST /api/categories`, `PATCH/DELETE /api/categories/:id`
-- Movimientos: `POST /api/stock/move`
-- Dashboard: `GET /api/dashboard`
-- Reportes: `GET /api/reports/inventory`, `GET /api/reports/movements?from=&to=`
+Para systemd, apunta a `node .output/server/index.mjs` (puerto 3000).
 
-## Migración de PocketBase
-Copia `pb_migrations/20251115_ferreteria_schema.js` al directorio de migraciones de tu PocketBase y ejecuta:
-```bash
-sudo -u pocketbase /opt/pocketbase/pocketbase --dir /var/lib/pocketbase migrate up
-sudo systemctl restart pocketbase
-```
+## Esquema PocketBase
+Colecciones esperadas:
 
-## Navegación
-- `/login` → Iniciar sesión
-- `/dashboard` → KPIs, movimientos últimos 30 días, valor por categoría
-- `/inventario` → CRUD productos + ajustes de stock
-- `/reportes` → Valor inventario y movimientos por fecha
+### categories
+- `name` (text, required)
+
+### inventory
+- `sku` (text, unique opcional)
+- `name` (text, required)
+- `category` (relation -> categories, optional)
+- `stock` (number)
+- `min_stock` (number)
+- `price` (number)
+- `cost` (number)
+- `location` (text)
+- `unit` (text)
+- `active` (bool, default true)
+- `notes` (text)
+
+### users (autenticación nativa de PB)
+
+## Endpoints principales
+- `POST /api/auth/login` -> set cookie `pb_auth`
+- `GET /api/auth/me`
+- `GET /api/categories` / `POST /api/categories`
+- `GET /api/products` (filtros: `search`, `categoryId`, `inStock`, `page`, `perPage`)
+- `POST /api/products` (SKU automático si se omite)
+- `GET /api/products/:id`
+- `PUT /api/products/:id`
+- `DELETE /api/products/:id`
+
+## UI
+- `/login`
+- `/inventario`
+- `/dashboard`
