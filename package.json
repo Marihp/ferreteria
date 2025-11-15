@@ -1,0 +1,29 @@
+{
+  "name": "openstock-ferreteria",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxi build --preset=cloudflare-pages",
+    "build:node": "nuxi build --preset=node-server",
+    "start": "node .output/server/index.mjs",
+    "preview": "nuxi preview"
+  },
+  "dependencies": {
+    "apexcharts": "^3.49.1",
+    "dayjs": "^1.11.13",
+    "pinia": "^2.2.6",
+    "pocketbase": "^0.21.5",
+    "vue": "^3.5.12",
+    "vue3-apexcharts": "^1.5.1"
+  },
+  "devDependencies": {
+    "@pinia/nuxt": "^0.5.5",
+    "@types/node": "^20.11.30",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.13",
+    "nuxt": "3.12.4"
+  }
+}
