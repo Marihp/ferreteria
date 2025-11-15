@@ -1,10 +1,13 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) return
-  const publicPages = ['/login']
-  if (publicPages.includes(to.path)) return
+  const user = useState<any>('user')
+  if (to.path === '/login') return
   try {
-    await $fetch('/api/auth/me', { credentials: 'include' })
-  } catch {
+    if (!user.value) {
+      const me = await $fetch('/api/auth/me', { credentials: 'include' })
+      user.value = me
+    }
+  } catch (e) {
     return navigateTo('/login')
   }
 })

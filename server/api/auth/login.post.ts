@@ -1,24 +1,26 @@
-import { readBody } from 'h3'
-import { getPB } from '../../utils/pb'
-
-function sanitize(v: string) { return (v || '').trim() }
-
-export default defineEventHandler(async (event) => {
+export default defineEventHandler( async (event) => {
   const body = await readBody(event)
-  const email = sanitize(body?.email || '')
-  const password = body?.password || ''
+  const email = String(body.email || '')
+  const password = String(body.password || '')
+
   if (!email || !password) {
-    throw createError({ statusCode: 400, statusMessage: 'Email y contraseña son requeridos' })
+    throw createError({ statusCode: 400, statusMessage: 'Email y password son requeridos' })
   }
-  const pb = getPB(event)
-  const authData = await pb.collection('users').authWithPassword(email, password)
+
+  const pb = (await import('../../utils/pb')).getPB(event)
+
+  const authData:any = await pb.collection('users').authWithPassword(email, password)
+
+  // cookie segura solo si así lo configuran explícitamente
+  const config = useRuntimeConfig()
+  const secure = (config.AUTH_COOKIE_SECURE || 'false') === 'true'
 
   setCookie(event, 'pb_auth', pb.authStore.token, {
     httpOnly: true,
-    secure: false,
+    secure,
     sameSite: 'lax',
     maxAge: 60 * 60 * 24,
-    path: '/'
+    path: '/',
   })
 
   return {
@@ -26,7 +28,7 @@ export default defineEventHandler(async (event) => {
       id: authData.record.id,
       email: authData.record.email,
       name: authData.record.name,
-      verified: authData.record.verified,
+      verified: !!authData.record.verified,
       admin: !!authData.record.admin
     },
     token: authData.token
